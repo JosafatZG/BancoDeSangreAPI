@@ -118,7 +118,7 @@ Id INT NOT NULL auto_increment,
 NombreUsuario VARCHAR(100) NOT NULL,
 Correo VARCHAR(255) NOT NULL,
 Pwd CHAR(60) NOT NULL,
-CodigoRecuperacion CHAR(15)
+CodigoRecuperacion CHAR(15),
 
 PRIMARY KEY(Id)
 );
