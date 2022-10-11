@@ -109,6 +109,20 @@ FOREIGN KEY (Donante) REFERENCES Paciente(Id),
 FOREIGN KEY (Receptor) REFERENCES Paciente(Id)
 );
 
+#TABLA Usuario
+
+DROP TABLE IF EXISTS Usuario;
+CREATE TABLE Usuario
+(
+Id INT NOT NULL auto_increment,
+NombreUsuario VARCHAR(100) NOT NULL,
+Correo VARCHAR(255) NOT NULL,
+Pwd CHAR(60) NOT NULL,
+CodigoRecuperacion CHAR(15),
+
+PRIMARY KEY(Id)
+);
+
 #INSERT INTO Bolsas (TipoBolsa, Cantidadml, Donante, Receptor, FechaDonacion, FechaAplicacion) VALUES (1, 450, 2, 1, '16/01/2022', '16/01/2022')
 #SELECT * FROM Bolsas
 
