@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BancoDeSangreAPI.Context;
 using BancoDeSangreAPI.Models;
+using BancoDeSangreAPI.Dto;
 
 namespace BancoDeSangreAPI.Controllers
 {
@@ -23,14 +24,14 @@ namespace BancoDeSangreAPI.Controllers
 
         // GET: api/Bolsas
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Bolsas>>> GetBolsas()
+        public async Task<ActionResult<IEnumerable<BolsaDTO>>> GetBolsas()
         {
             return await _context.Bolsas.ToListAsync();
         }
 
         // GET: api/Bolsas/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Bolsas>> GetBolsas(int id)
+        public async Task<ActionResult<BolsaDTO>> GetBolsas(int id)
         {
             var bolsas = await _context.Bolsas.FindAsync(id);
 
@@ -46,7 +47,7 @@ namespace BancoDeSangreAPI.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBolsas(int id, Bolsas bolsas)
+        public async Task<IActionResult> PutBolsas(int id, BolsaDTO bolsas)
         {
             if (id != bolsas.Id)
             {
@@ -78,7 +79,7 @@ namespace BancoDeSangreAPI.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Bolsas>> PostBolsas(Bolsas bolsas)
+        public async Task<ActionResult<Bolsas>> PostBolsas(BolsaDTO bolsas)
         {
             _context.Bolsas.Add(bolsas);
             await _context.SaveChangesAsync();
@@ -88,7 +89,7 @@ namespace BancoDeSangreAPI.Controllers
 
         // DELETE: api/Bolsas/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Bolsas>> DeleteBolsas(int id)
+        public async Task<ActionResult<BolsaDTO>> DeleteBolsas(int id)
         {
             var bolsas = await _context.Bolsas.FindAsync(id);
             if (bolsas == null)

@@ -1,6 +1,8 @@
 using BancoDeSangreAPI.Context;
+using BancoDeSangreAPI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -28,10 +30,9 @@ namespace BancoDeSangreAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            //services.AddDbContextPool<AppDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
             services.AddDbContext<AppDbContext>(
-        b => b.UseLazyLoadingProxies()
-          .UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+                b => b.UseLazyLoadingProxies()
+                .UseMySql(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddSwaggerGen(options =>
             {
@@ -44,6 +45,12 @@ namespace BancoDeSangreAPI
                 });
             });
             services.AddControllers();
+            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddRazorPages();
+            services.AddMvc().AddRazorRuntimeCompilation();
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.AddScoped<IViewRender, ViewRender>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

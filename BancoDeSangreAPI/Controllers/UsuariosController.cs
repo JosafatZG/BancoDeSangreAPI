@@ -9,6 +9,9 @@ using BancoDeSangreAPI.Context;
 using BancoDeSangreAPI.Model;
 using System.Text;
 using System.Security.Cryptography;
+using BancoDeSangreAPI.Dto;
+using BancoDeSangreAPI.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace BancoDeSangreAPI.Controllers
 {
@@ -17,12 +20,14 @@ namespace BancoDeSangreAPI.Controllers
     public class UsuariosController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IEmailSender _emailSender;
 
-        public UsuariosController(AppDbContext context)
+        public UsuariosController(AppDbContext context,
+                                      IEmailSender emailSender)
         {
             _context = context;
+            _emailSender = emailSender;
         }
-
         // GET: api/Usuarios
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuario()
@@ -48,18 +53,23 @@ namespace BancoDeSangreAPI.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuario(int id, Usuario usuario)
+        public async Task<IActionResult> PutUsuario(int id, UsuarioEditDTO usuario)
         {
             if (id != usuario.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(usuario).State = EntityState.Modified;
+            var userToEdit = await _context.Usuario.FindAsync(id);
+            userToEdit.NombreUsuario = usuario.NombreUsuario;
+            userToEdit.Correo = usuario.Correo;
+
+            _context.Entry(userToEdit).State = EntityState.Modified;
 
             try
             {
                 await _context.SaveChangesAsync();
+                return Ok();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -106,14 +116,110 @@ namespace BancoDeSangreAPI.Controllers
             return usuario;
         }
 
+        
+        [HttpGet("Login")]
+        public async Task<ActionResult<Usuario>> Login([FromQuery] UsuarioDTO usuario)
+        {
+            return (await _context.Usuario.FromSqlRaw("CALL sp_Login({0}, {1})", usuario.NombreUsuario, Hash(usuario.Pwd)).ToListAsync()).FirstOrDefault();
+        }
+        [HttpGet("SendConfirmationNumber")]
+        public async Task<ActionResult<bool>> SendConfirmationNumber([FromQuery] string correo)
+        {
+            var flag = false;
+            var exists = _context.Usuario.Any(e => e.Correo == correo);
+            if (exists)
+            {
+                var user = (await _context.Usuario.Where(u => u.Correo == correo).ToListAsync()).First();
+                var code = RandomString(6);
+                EmailTemplate template = new EmailTemplate()
+                {
+                    Title = "Recuperar contraseña",
+                    MailInfo = "info.fleeter.manager@gmail.com",
+                    Headline = "¿Olvidaste tu contraseña?",
+                    Message = "Reestablece tu contraseña desde la app móvil\nColoca el siguiente código en la app:",
+                    Phone = "+503 7777-7777",
+                    GetInTouch = "Mantente en contacto con nosotros",
+                    Thanks = "¡Gracias por ser parte de Banco de Sangre SA de CV!",
+                    Link = code
+                };
+                try
+                {
+                    user.CodigoRecuperacion = code;
+                    await _context.SaveChangesAsync();
+                    await ((EmailSender)_emailSender).SendEmailAsync(correo, template);
+                    flag = true;
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+
+            return flag;
+        }
+        [HttpGet("CheckConfirmationNumber")]
+        public async Task<ActionResult<bool>> CheckConfirmationNumber([FromQuery] string correo, [FromQuery] string codigoRecuperacion)
+        {
+            var flag = false;
+            var exists = _context.Usuario.Any(e => e.Correo == correo);
+            if (exists)
+            {
+                var user = (await _context.Usuario.Where(u => u.Correo == correo).ToListAsync()).First();
+                if (user.CodigoRecuperacion == codigoRecuperacion)
+                    flag = true;
+            }
+
+            return flag;
+        }
+        [HttpPut("ChangePassword/{id}")]
+        public async Task<IActionResult> ChangePassword(int id, UsuarioChangePassDTO usuario)
+        {
+            if (id != usuario.Id)
+            {
+                return BadRequest();
+            }
+
+            var userToEdit = await _context.Usuario.FindAsync(id);
+            userToEdit.Pwd = Hash(usuario.Pwd);
+
+            _context.Entry(userToEdit).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UsuarioExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+
         private bool UsuarioExists(int id)
         {
             return _context.Usuario.Any(e => e.Id == id);
         }
-        static string Hash(string input)
+        private static string Hash(string input)
         {
             var hash = new SHA1Managed().ComputeHash(Encoding.UTF8.GetBytes(input));
             return string.Concat(hash.Select(b => b.ToString("x2")));
+        }
+        private static string RandomString(int length)
+        {
+            Random random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

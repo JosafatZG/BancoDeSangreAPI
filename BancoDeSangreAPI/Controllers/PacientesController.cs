@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BancoDeSangreAPI.Context;
 using BancoDeSangreAPI.Models;
+using BancoDeSangreAPI.Dto;
 
 namespace BancoDeSangreAPI.Controllers
 {
@@ -23,14 +24,14 @@ namespace BancoDeSangreAPI.Controllers
 
         // GET: api/Pacientes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Paciente>>> GetPaciente()
+        public async Task<ActionResult<IEnumerable<PacienteDTO>>> GetPaciente()
         {
             return await _context.Paciente.ToListAsync();
         }
 
         // GET: api/Pacientes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Paciente>> GetPaciente(int id)
+        public async Task<ActionResult<PacienteDTO>> GetPaciente(int id)
         {
             var paciente = await _context.Paciente.FindAsync(id);
 
@@ -46,7 +47,7 @@ namespace BancoDeSangreAPI.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPaciente(int id, Paciente paciente)
+        public async Task<IActionResult> PutPaciente(int id, PacienteDTO paciente)
         {
             if (id != paciente.Id)
             {
@@ -78,7 +79,7 @@ namespace BancoDeSangreAPI.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Paciente>> PostPaciente(Paciente paciente)
+        public async Task<ActionResult<Paciente>> PostPaciente(PacienteDTO paciente)
         {
             _context.Paciente.Add(paciente);
             await _context.SaveChangesAsync();
@@ -88,7 +89,7 @@ namespace BancoDeSangreAPI.Controllers
 
         // DELETE: api/Pacientes/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Paciente>> DeletePaciente(int id)
+        public async Task<ActionResult<PacienteDTO>> DeletePaciente(int id)
         {
             var paciente = await _context.Paciente.FindAsync(id);
             if (paciente == null)

@@ -1,8 +1,8 @@
 
 #CREANDO LA BASE DE DATOS
-drop database if exists db_a8e1de_bsangre;
-CREATE DATABASE db_a8e1de_bsangre;
-USE db_a8e1de_bsangre;
+drop database if exists BancoDeSangre;
+CREATE DATABASE BancoDeSangre;
+USE BancoDeSangre;
 
 
 #TABLA TIPOS DE SANGRE
@@ -75,16 +75,16 @@ Id INT NOT NULL auto_increment,
 Nombres VARCHAR(60) NOT NULL,
 Apellidos VARCHAR(60) NOT NULL,
 FechaNac date NOT NULL,
-GeneroId INT NOt NULL,
+Genero INT NOt NULL,
 Edad INT NOT NULL,
-TipoSangreId INT NOT NULL,
-TipoRHId INT NOT NULL,
+TipoSangre INT NOT NULL,
+TipoRH INT NOT NULL,
 
 PRIMARY KEY(Id),
 
-FOREIGN KEY (GeneroId) REFERENCES Genero(Id),
-FOREIGN KEY (TipoSangreId) REFERENCES TipoSangre(Id),
-FOREIGN KEY (TipoRHId) REFERENCES TipoRH(Id)
+FOREIGN KEY (Genero) REFERENCES Genero(Id),
+FOREIGN KEY (TipoSangre) REFERENCES TipoSangre(Id),
+FOREIGN KEY (TipoRH) REFERENCES TipoRH(Id)
 );
 
 #SELECT * FROM Paciente
@@ -95,18 +95,18 @@ DROP TABLE IF EXISTS Bolsas;
 CREATE TABLE Bolsas
 (
 Id INT NOT NULL auto_increment,
-TipoBolsaId INT NOT NULL,
+TipoBolsa INT NOT NULL,
 Cantidadml INT NOT NULL,
-DonanteId INT NOT NULL,
-ReceptorId INT,
+Donante INT NOT NULL,
+Receptor INT,
 FechaDonacion DATE NOT NULL,
 FechaAplicacion DATE,
 
 PRIMARY KEY(Id),
 
-FOREIGN KEY (TipoBolsaId) REFERENCES TipoBolsa(Id),
-FOREIGN KEY (DonanteId) REFERENCES Paciente(Id),
-FOREIGN KEY (ReceptorId) REFERENCES Paciente(Id)
+FOREIGN KEY (TipoBolsa) REFERENCES TipoBolsa(Id),
+FOREIGN KEY (Donante) REFERENCES Paciente(Id),
+FOREIGN KEY (Receptor) REFERENCES Paciente(Id)
 );
 
 #TABLA Usuario
@@ -123,10 +123,20 @@ CodigoRecuperacion CHAR(15),
 PRIMARY KEY(Id)
 );
 
-#INSERT INTO Bolsas (TipoBolsa, Cantidadml, Donante, Receptor, FechaDonacion, FechaAplicacion) VALUES (1, 450, 2, 1, '16/01/2022', '16/01/2022')
-#SELECT * FROM Bolsas
+#Procedures
+DELIMITER //
+CREATE PROCEDURE sp_Login(IN Username VARCHAR(100), PwdIpt VARCHAR(60))
+BEGIN
+	SELECT *
+    FROM usuario
+    WHERE NombreUsuario = Username AND Pwd = PwdIpt
+    LIMIT 1;
+END //
+DELIMITER ;
 
-#DELETE FROM Bolsas 
 
-#DBCC CHECKIDENT ('Bolsas', RESEED, 0)
+
+
+
+
 

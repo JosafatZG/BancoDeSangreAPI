@@ -9,6 +9,5 @@ namespace BancoDeSangreAPI.Models
     {
         public int Id { get; set; }
         public string NombreTS { get; set; }
-        public virtual ICollection<Paciente> Pacientes { get; set; }
     }
 }
