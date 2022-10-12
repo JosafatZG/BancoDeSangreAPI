@@ -28,7 +28,11 @@ namespace BancoDeSangreAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddDbContextPool<AppDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            //services.AddDbContextPool<AppDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<AppDbContext>(
+        b => b.UseLazyLoadingProxies()
+          .UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddSwaggerGen(options =>
             {
                 var groupName = "v1";
