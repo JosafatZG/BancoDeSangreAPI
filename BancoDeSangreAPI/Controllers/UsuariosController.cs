@@ -53,7 +53,7 @@ namespace BancoDeSangreAPI.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuario(int id, UsuarioEditDTO usuario)
+        public async Task<IActionResult> PutUsuario([FromQuery] int id, [FromQuery] UsuarioEditDTO usuario)
         {
             if (id != usuario.Id)
             {
@@ -172,7 +172,7 @@ namespace BancoDeSangreAPI.Controllers
             return flag;
         }
         [HttpPut("ChangePassword")]
-        public async Task<IActionResult> ChangePassword(UsuarioChangePassDTO usuario)
+        public async Task<IActionResult> ChangePassword([FromQuery] UsuarioChangePassDTO usuario)
         {
             var userToEdit = await _context.Usuario.FirstOrDefaultAsync(u => u.Correo == usuario.Correo);
             if(userToEdit == null)
