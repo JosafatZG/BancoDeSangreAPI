@@ -191,7 +191,7 @@ namespace BancoDeSangreAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UsuarioExists(id))
+                if (!UsuarioExists(userToEdit.Id))
                 {
                     return NotFound();
                 }
