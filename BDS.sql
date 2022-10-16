@@ -137,6 +137,7 @@ DELIMITER ;
 
 
 
-
+select * from usuario;
+delete from usuario WHERE Id is not null;
 
 

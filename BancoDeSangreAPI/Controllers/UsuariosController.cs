@@ -171,15 +171,15 @@ namespace BancoDeSangreAPI.Controllers
 
             return flag;
         }
-        [HttpPut("ChangePassword/{id}")]
-        public async Task<IActionResult> ChangePassword(int id, UsuarioChangePassDTO usuario)
+        [HttpPut("ChangePassword")]
+        public async Task<IActionResult> ChangePassword(UsuarioChangePassDTO usuario)
         {
-            if (id != usuario.Id)
+            var userToEdit = await _context.Usuario.FirstOrDefaultAsync(u => u.Correo == usuario.Correo);
+            if(userToEdit == null)
             {
                 return BadRequest();
             }
 
-            var userToEdit = await _context.Usuario.FindAsync(id);
             userToEdit.Pwd = Hash(usuario.Pwd);
 
             _context.Entry(userToEdit).State = EntityState.Modified;
