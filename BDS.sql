@@ -140,4 +140,5 @@ DELIMITER ;
 select * from usuario;
 delete from usuario WHERE Id is not null;
 
+SELECT SHA1('Megadeth7')
 

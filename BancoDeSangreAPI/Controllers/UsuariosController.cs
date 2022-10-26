@@ -34,6 +34,15 @@ namespace BancoDeSangreAPI.Controllers
         {
             return await _context.Usuario.ToListAsync();
         }
+        // GET: api/Usuarios
+        [HttpGet("Buscar")]
+        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuario([FromQuery] string nombre)
+        {
+            if (string.IsNullOrEmpty(nombre))
+                return await _context.Usuario.ToListAsync();
+            else
+                return await _context.Usuario.Where(u => u.NombreUsuario.ToLower().Contains(nombre)).ToListAsync();
+        }
 
         // GET: api/Usuarios/5
         [HttpGet("{id}")]
@@ -52,15 +61,10 @@ namespace BancoDeSangreAPI.Controllers
         // PUT: api/Usuarios/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuario([FromQuery] int id, [FromQuery] UsuarioEditDTO usuario)
+        [HttpPut]
+        public async Task<IActionResult> PutUsuario([FromQuery] UsuarioEditDTO usuario)
         {
-            if (id != usuario.Id)
-            {
-                return BadRequest();
-            }
-
-            var userToEdit = await _context.Usuario.FindAsync(id);
+            var userToEdit = await _context.Usuario.FindAsync(usuario.Id);
             userToEdit.NombreUsuario = usuario.NombreUsuario;
             userToEdit.Correo = usuario.Correo;
 
@@ -73,7 +77,7 @@ namespace BancoDeSangreAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UsuarioExists(id))
+                if (!UsuarioExists(usuario.Id))
                 {
                     return NotFound();
                 }

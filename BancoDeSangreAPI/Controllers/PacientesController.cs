@@ -28,6 +28,14 @@ namespace BancoDeSangreAPI.Controllers
         {
             return await _context.Paciente.ToListAsync();
         }
+        [HttpGet("Buscar")]
+        public async Task<ActionResult<IEnumerable<PacienteDTO>>> GetPaciente([FromQuery] string nombre)
+        {
+            if(string.IsNullOrEmpty(nombre))
+                return await _context.Paciente.ToListAsync();
+            else
+            return await _context.Paciente.Where(p => (p.Nombres + " " + p.Apellidos).ToLower().Contains(nombre)).ToListAsync();
+        }
 
         // GET: api/Pacientes/5
         [HttpGet("{id}")]
