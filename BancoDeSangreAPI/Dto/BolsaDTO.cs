@@ -9,8 +9,8 @@ namespace BancoDeSangreAPI.Dto
         public int TipoBolsaId { get; set; }
         public int Cantidadml { get; set; }
         public int DonanteId { get; set; }
-        public int ReceptorId { get; set; }
+        public int? ReceptorId { get; set; }
         public DateTime FechaDonacion { get; set; }
-        public DateTime FechaAplicacion { get; set; }
+        public DateTime? FechaAplicacion { get; set; }
     }
 }
