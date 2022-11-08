@@ -62,11 +62,18 @@ namespace BancoDeSangreAPI.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(paciente).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                var pacienteF = await _context.Paciente.FindAsync(id);
+                if(paciente != null)
+                {
+                    pacienteF.Nombres = paciente.Nombres;
+                    pacienteF.Apellidos = paciente.Apellidos;
+                    pacienteF.TipoSangreId = paciente.TipoSangreId;
+                    pacienteF.TipoRHId = paciente.TipoRHId;
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -105,8 +112,9 @@ namespace BancoDeSangreAPI.Controllers
                 return NotFound();
             }
 
-            _context.Paciente.Remove(paciente);
-            await _context.SaveChangesAsync();
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM paciente WHERE Id = {0}", id);
+            //_context.Paciente.Remove(paciente);
+            //await _context.SaveChangesAsync();
 
             return paciente;
         }

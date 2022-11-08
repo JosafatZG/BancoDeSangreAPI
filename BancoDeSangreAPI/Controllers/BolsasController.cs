@@ -42,6 +42,26 @@ namespace BancoDeSangreAPI.Controllers
 
             return bolsas;
         }
+        [HttpGet("Buscar")]
+        public async Task<ActionResult<IEnumerable<BolsaDTO>>> GetBolsas([FromQuery] string nombre)
+        {
+            if (string.IsNullOrEmpty(nombre))
+                return await _context.Bolsas.ToListAsync();
+            else
+            {
+                var pacientes = await _context.Paciente.ToListAsync();
+                var bolsas = await _context.Bolsas.ToListAsync();
+                var bolsasFtr = new List<BolsaDTO>();
+                foreach (var item in bolsas)
+                {
+                    var paciente = pacientes.FirstOrDefault(p => p.Id == item.DonanteId);
+                    if (paciente != null)
+                        if ((paciente.Nombres + " " + paciente.Apellidos).ToLower().Contains(nombre.ToLower()))
+                            bolsasFtr.Add(item);
+                }
+                return bolsasFtr;
+            }
+        }
 
         // PUT: api/Bolsas/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
