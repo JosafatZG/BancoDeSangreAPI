@@ -79,6 +79,7 @@ namespace BancoDeSangreAPI.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                return Ok();
             }
             catch (DbUpdateConcurrencyException)
             {
